@@ -38,5 +38,31 @@ const getFeed = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+const likePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
 
-module.exports = { uploadPost, getFeed, upload };
+        // Verificar si el post existe
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post no encontrado' });
+        }
+
+        // Comprobar si el usuario ya ha dado like al post
+        if (post.likes.includes(req.user.id)) {
+            return res.status(400).json({ message: 'Ya has dado like a este post' });
+        }
+
+        // Agregar el like al post
+        post.likes.push(req.user.id);
+        await post.save();
+
+        // Devolver el post actualizado
+        res.status(200).json(post);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+};
+
+module.exports = { uploadPost, getFeed, upload, likePost };
