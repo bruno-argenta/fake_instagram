@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Post = require("../models/Post");
 
 const getUserProfile = async (req, res) => {
   try {
@@ -6,8 +7,15 @@ const getUserProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    // Devolver los datos del usuario
-    res.status(200).json(user);
+    const posts = await Post.find({ user: req.params.id }).sort({
+      createdAt: -1,
+    });
+
+    // Devolver los datos del usuario y posts
+    res.status(200).json({
+      user,
+      posts,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error del servidor" });
