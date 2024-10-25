@@ -4,7 +4,6 @@ const {
   getUserProfile,
   getAllUsers,
   addFriend,
-  updateUserProfile,
 } = require("../controllers/userController");
 const { protect } = require("../middlewares/authMiddleware");
 
