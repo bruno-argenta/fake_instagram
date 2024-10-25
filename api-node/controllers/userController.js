@@ -61,9 +61,41 @@ const addFriend = async (req, res) => {
   }
 };
 
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    if (req.body.username) {
+      user.username = req.body.username;
+    }
+
+    if (req.body.profilePicture) {
+      user.profilePicture = req.body.profilePicture;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Perfil actualizado correctamente",
+      user: {
+        username: user.username,
+        profilePicture: user.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
 module.exports = {
   getUserProfile,
   getAllUsers,
   addFriend,
+  updateUserProfile,
 };
 

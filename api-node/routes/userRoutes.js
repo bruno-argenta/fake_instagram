@@ -129,5 +129,53 @@ router.get("/all", protect, getAllUsers);
 //                   example: "Error del servidor"
 router.post("/add-friend/:friendId", protect, addFriend);
 
+/**
+ * @swagger
+ * /api/user/profile/edit:
+ *   put:
+ *     summary: Actualizar el perfil del usuario autenticado
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "nuevo_username"
+ *               profilePicture:
+ *                 type: string
+ *                 example: "https://example.com/profile/nuevo_username.jpg"
+ *     responses:
+ *       200:
+ *         description: Perfil actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Perfil actualizado correctamente"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                       example: "nuevo_username"
+ *                     profilePicture:
+ *                       type: string
+ *                       example: "https://example.com/profile/nuevo_username.jpg"
+ *       400:
+ *         description: Petición incorrecta, datos inválidos
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
+router.put("/profile/edit", protect, updateUserProfile);
+
 module.exports = router;
 
