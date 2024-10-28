@@ -4,6 +4,7 @@ const {
   getFeed,
   upload,
   likePost,
+  removeLike,
 } = require("../controllers/postController");
 const {
   createComment,
@@ -62,6 +63,46 @@ const router = express.Router();
  *               $ref: '#/components/schemas/Error'
  */
 router.post("/upload", protect, upload.single("image"), uploadPost);
+
+/**
+ * @swagger
+ * /api/posts/{postId}/comments/{commentId}:
+ *   delete:
+ *     summary: Eliminar un comentario de un post
+ *     tags: [Comentarios]
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         description: ID del post
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         description: ID del comentario a eliminar
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Comentario eliminado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Comentario eliminado correctamente"
+ *       403:
+ *         description: No tienes permiso para eliminar este comentario
+ *       404:
+ *         description: Post o comentario no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
+router.delete("/:postId/comments/:commentId", protect, removeComment);
+
 /**
  * @swagger
  * /api/posts/feed:
@@ -258,26 +299,22 @@ router.get("/comments/:commentId", protect, getComment);
 
 /**
  * @swagger
- * /api/posts/{postId}/comments/{commentId}:
+ * /api/posts/{postId}/like:
  *   delete:
- *     summary: Eliminar un comentario de un post
- *     tags: [Comentarios]
+ *     summary: Quitar el like de un post
+ *     tags: [Publicaciones]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: postId
  *         required: true
- *         description: ID del post
- *         schema:
- *           type: string
- *       - in: path
- *         name: commentId
- *         required: true
- *         description: ID del comentario a eliminar
+ *         description: ID del post del que se va a quitar el like
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Comentario eliminado correctamente
+ *         description: Like eliminado exitosamente
  *         content:
  *           application/json:
  *             schema:
@@ -285,15 +322,37 @@ router.get("/comments/:commentId", protect, getComment);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Comentario eliminado correctamente"
- *       403:
- *         description: No tienes permiso para eliminar este comentario
+ *                   example: "Like eliminado exitosamente"
+ *       400:
+ *         description: El usuario no ha dado like a este post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No has dado like a este post"
+ *       401:
+ *         description: No autorizado, token inválido o ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
- *         description: Post o comentario no encontrado
+ *         description: Post no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
-router.delete("/:postId/comments/:commentId", protect, removeComment);
+router.delete("/:postId/like", protect, removeLike);
 
 module.exports = router;
 
