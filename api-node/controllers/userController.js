@@ -50,9 +50,11 @@ const addFriend = async (req, res) => {
       return res.status(400).json({ message: "Este usuario ya es tu amigo" });
     }
 
-    // Agregar el amigo al array de amigos del usuario
     user.friends.push(friend._id);
     await user.save();
+
+    friend.friends.push(user._id);
+    await friend.save();
 
     res.status(200).json({ message: "Amigo agregado correctamente" });
   } catch (error) {
