@@ -36,6 +36,26 @@ const createComment = async (req, res) => {
   }
 };
 
+const getComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+
+    // Buscar el comentario por su ID
+    const comment = await Comment.findById(commentId).populate(
+      "user",
+      "username email"
+    );
+    if (!comment) {
+      return res.status(404).json({ message: "Comentario no encontrado" });
+    }
+
+    res.status(200).json(comment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
 const removeComment = async (req, res) => {
   try {
     const { postId, commentId } = req.params;
@@ -73,5 +93,6 @@ const removeComment = async (req, res) => {
 module.exports = {
   createComment,
   removeComment,
+  getComment,
 };
 
