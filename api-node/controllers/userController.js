@@ -76,11 +76,15 @@ const removeFriend = async (req, res) => {
       return res.status(400).json({ message: "Este usuario no es tu amigo" });
     }
 
-    // Remover el amigo del array de amigos del usuario
     user.friends = user.friends.filter(
       (friendId) => friendId.toString() !== friend._id.toString()
     );
     await user.save();
+
+    friend.friends = friend.friends.filter(
+      (friendId) => friendId.toString() !== user._id.toString()
+    );
+    await friend.save();
 
     res.status(200).json({ message: "Amigo eliminado correctamente" });
   } catch (error) {
@@ -116,6 +120,7 @@ const updateUserProfile = async (req, res) => {
       user: {
         username: user.username,
         profilePicture: user.profilePicture,
+        description: user.description,
       },
     });
   } catch (error) {
