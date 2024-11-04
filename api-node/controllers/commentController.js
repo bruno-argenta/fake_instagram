@@ -42,7 +42,7 @@ const getComment = async (req, res) => {
 
     const comment = await Comment.findById(commentId).populate(
       "user",
-      "username email"
+      "username email profilePicture"
     );
 
     if (!comment) {
@@ -50,16 +50,14 @@ const getComment = async (req, res) => {
     }
 
     res.status(200).json({
-      comment: {
-        _id: comment._id,
-        text: comment.text,
-        createdAt: comment.createdAt,
-        updatedAt: comment.updatedAt,
-        user: {
-          id: comment.user._id,
-          username: comment.user.username,
-          profilePicture: comment.user.profilePicture,
-        },
+      _id: comment._id,
+      content: comment.content,
+      createdAt: comment.createdAt,
+      updatedAt: comment.updatedAt,
+      user: {
+        id: comment.user._id,
+        username: comment.user.username,
+        profilePicture: comment.user.profilePicture,
       },
     });
   } catch (error) {
@@ -88,11 +86,11 @@ const removeComment = async (req, res) => {
         .json({ message: "No tienes permiso para eliminar este comentario" });
     }
 
-    await Comment.findByIdAndDelete(commentId);
+    const deletedComment = await Comment.findByIdAndDelete(commentId);
     post.comments = post.comments.filter((id) => id.toString() !== commentId);
     await post.save();
 
-    res.status(200).json({ message: "Comentario eliminado correctamente" });
+    res.status(200).json(deletedComment); // Retorna el comentario eliminado directamente
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error del servidor" });
