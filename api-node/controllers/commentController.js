@@ -58,7 +58,7 @@ const getComment = async (req, res) => {
         user: {
           id: comment.user._id,
           username: comment.user.username,
-          email: comment.user.email,
+          profilePicture: comment.user.profilePicture,
         },
       },
     });
