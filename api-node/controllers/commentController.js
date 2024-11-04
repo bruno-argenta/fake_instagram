@@ -77,7 +77,6 @@ const removeComment = async (req, res) => {
       return res.status(404).json({ message: "Post no encontrado" });
     }
 
-    // Verificar si el comentario existe y pertenece al usuario autenticado
     const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).json({ message: "Comentario no encontrado" });
@@ -89,9 +88,7 @@ const removeComment = async (req, res) => {
         .json({ message: "No tienes permiso para eliminar este comentario" });
     }
 
-    // Eliminar el comentario de la base de datos
-    await comment.remove();
-
+    await Comment.findByIdAndDelete(commentId);
     post.comments = post.comments.filter((id) => id.toString() !== commentId);
     await post.save();
 
