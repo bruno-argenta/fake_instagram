@@ -40,16 +40,28 @@ const getComment = async (req, res) => {
   try {
     const { commentId } = req.params;
 
-    // Buscar el comentario por su ID
     const comment = await Comment.findById(commentId).populate(
       "user",
       "username email"
     );
+
     if (!comment) {
       return res.status(404).json({ message: "Comentario no encontrado" });
     }
 
-    res.status(200).json(comment);
+    res.status(200).json({
+      comment: {
+        _id: comment._id,
+        text: comment.text,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+        user: {
+          id: comment.user._id,
+          username: comment.user.username,
+          email: comment.user.email,
+        },
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error del servidor" });
