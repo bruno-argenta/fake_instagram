@@ -34,12 +34,21 @@ const getFeed = async (req, res) => {
   try {
     const posts = await Post.find()
       .sort({ createdAt: -1 })
-      .populate("user", "username profilePicture");
+      .populate("user", "username profilePicture")
+      .populate({
+        path: "comments",
+        select: "content _id",
+        populate: {
+          path: "user",
+          select: "username _id",
+        },
+      });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const likePost = async (req, res) => {
   try {
     const { postId } = req.params;
