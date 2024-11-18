@@ -8,6 +8,7 @@ const {
   removeFriend,
 } = require("../controllers/userController");
 const { protect } = require("../middlewares/authMiddleware");
+const { upload } = require("../controllers/postController");
 
 /**
  * @swagger
@@ -183,7 +184,12 @@ router.post("/add-friend/:friendId", protect, addFriend);
  *       500:
  *         description: Error del servidor
  */
-router.put("/profile/edit", protect, updateUserProfile);
+router.put(
+  "/profile/edit",
+  protect,
+  upload.single("profilePicture"),
+  updateUserProfile
+);
 
 /**
  * @swagger
@@ -219,4 +225,3 @@ router.put("/profile/edit", protect, updateUserProfile);
 router.delete("/remove-friend/:friendId", protect, removeFriend);
 
 module.exports = router;
-

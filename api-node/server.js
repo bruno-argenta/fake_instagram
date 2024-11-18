@@ -1,13 +1,15 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+dotenv.config();
+
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
 const userRoutes = require("./routes/userRoutes");
+const imageRoutes = require("./routes/imageRoutes");
 const swaggerDocs = require("./config/swagger");
+const connectDB = require("./config/db");
 
-dotenv.config();
 const app = express();
 
 // Middlewares
@@ -22,22 +24,9 @@ swaggerDocs(app);
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/image", imageRoutes);
 
 app.use("/uploads", express.static("./uploads"));
-
-// Conectar a MongoDB
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("MongoDB connected");
-  } catch (error) {
-    console.error("Error connecting to MongoDB", error);
-    process.exit(1);
-  }
-};
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5001;

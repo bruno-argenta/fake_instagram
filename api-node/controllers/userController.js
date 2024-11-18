@@ -108,8 +108,8 @@ const updateUserProfile = async (req, res) => {
       user.description = req.body.description;
     }
 
-    if (req.body.profilePicture) {
-      user.profilePicture = req.body.profilePicture;
+    if (req.file?.filename) {
+      user.profilePicture = req.file.filename;
     }
 
     await user.save();
@@ -135,4 +135,3 @@ module.exports = {
   updateUserProfile,
   removeFriend,
 };
-

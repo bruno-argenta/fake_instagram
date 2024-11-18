@@ -1,13 +1,18 @@
 const Post = require("../models/Post");
 const multer = require("multer");
+const { GridFsStorage } = require("multer-gridfs-storage");
 
-// Configuración de Multer para la subida de imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
+const storage = new GridFsStorage({
+  url: process.env.MONGO_URI,
+  file: (req, file) => {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+      return {
+        bucketName: "photos",
+        filename: `${Date.now()}_${file.originalname}`,
+      };
+    } else {
+      return `${Date.now()}_${file.originalname}`;
+    }
   },
 });
 
@@ -19,7 +24,7 @@ const uploadPost = async (req, res) => {
   try {
     const post = new Post({
       user: req.user._id,
-      imageUrl: req.file.path,
+      imageUrl: req.file.filename,
       caption,
     });
     await post.save();
@@ -103,4 +108,3 @@ const removeLike = async (req, res) => {
 };
 
 module.exports = { uploadPost, getFeed, upload, likePost, removeLike };
-

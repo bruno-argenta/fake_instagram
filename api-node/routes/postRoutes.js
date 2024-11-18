@@ -355,4 +355,3 @@ router.get("/comments/:commentId", protect, getComment);
 router.delete("/:postId/like", protect, removeLike);
 
 module.exports = router;
-
