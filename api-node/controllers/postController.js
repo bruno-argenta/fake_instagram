@@ -1,5 +1,6 @@
 const Post = require("../models/Post");
 const multer = require("multer");
+const { addNotification } = require("./notificationController");
 
 // Configuración de Multer para la subida de imágenes
 const storage = multer.diskStorage({
@@ -55,6 +56,7 @@ const likePost = async (req, res) => {
 
     // Verificar si el post existe
     const post = await Post.findById(postId);
+
     if (!post) {
       return res.status(404).json({ message: "Post no encontrado" });
     }
@@ -67,6 +69,12 @@ const likePost = async (req, res) => {
     // Agregar el like al post
     post.likes.push(req.user.id);
     await post.save();
+
+    await addNotification(post.user._id, {
+      type: "like",
+      fromUserId: req.user.id,
+      postId: post.id,
+    });
 
     // Devolver el post actualizado
     res.status(200).json(post);

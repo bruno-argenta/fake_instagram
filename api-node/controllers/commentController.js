@@ -2,6 +2,7 @@
 
 const Comment = require("../models/Comment");
 const Post = require("../models/Post");
+const { addNotification } = require("./notificationController");
 
 const createComment = async (req, res) => {
   try {
@@ -27,6 +28,12 @@ const createComment = async (req, res) => {
     // Agregar el comentario al array de comentarios del post
     post.comments.push(savedComment._id);
     await post.save();
+
+    await addNotification(post.user._id, {
+      type: "comment",
+      fromUserId: req.user.id,
+      postId: post.id,
+    });
 
     // Devolver el comentario creado
     res.status(201).json(savedComment);

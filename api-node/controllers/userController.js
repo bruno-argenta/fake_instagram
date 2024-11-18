@@ -1,5 +1,9 @@
 const User = require("../models/User");
 const Post = require("../models/Post");
+const {
+  getNotifications,
+  addNotification,
+} = require("../controllers/notificationController");
 
 const getUserProfile = async (req, res) => {
   try {
@@ -54,6 +58,16 @@ const addFriend = async (req, res) => {
 
     friend.friends.push(user._id);
     await friend.save();
+
+    await addNotification(friend._id, {
+      type: "follow",
+      fromUserId: user._id,
+    });
+
+    await addNotification(user._id, {
+      type: "follow",
+      fromUserId: friend._id,
+    });
 
     res.status(200).json({ message: "Amigo agregado correctamente" });
   } catch (error) {
@@ -128,11 +142,23 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+const getUserNotifications = async (req, res) => {
+  try {
+    const notifications = await getNotifications(req.user._id);
+
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener las notificaciones" });
+  }
+};
+
 module.exports = {
   getUserProfile,
   getAllUsers,
   addFriend,
   updateUserProfile,
   removeFriend,
+  getUserNotifications,
 };
 
