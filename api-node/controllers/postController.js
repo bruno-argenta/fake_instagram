@@ -1,6 +1,7 @@
 const Post = require("../models/Post");
 const multer = require("multer");
 const { GridFsStorage } = require("multer-gridfs-storage");
+const { addNotification } = require("./notificationController");
 
 const storage = new GridFsStorage({
   url: process.env.MONGO_URI,
@@ -60,6 +61,7 @@ const likePost = async (req, res) => {
 
     // Verificar si el post existe
     const post = await Post.findById(postId);
+
     if (!post) {
       return res.status(404).json({ message: "Post no encontrado" });
     }
@@ -72,6 +74,12 @@ const likePost = async (req, res) => {
     // Agregar el like al post
     post.likes.push(req.user.id);
     await post.save();
+
+    await addNotification(post.user._id, {
+      type: "like",
+      fromUserId: req.user.id,
+      postId: post.id,
+    });
 
     // Devolver el post actualizado
     res.status(200).json(post);
@@ -108,3 +116,4 @@ const removeLike = async (req, res) => {
 };
 
 module.exports = { uploadPost, getFeed, upload, likePost, removeLike };
+

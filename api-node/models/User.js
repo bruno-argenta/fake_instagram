@@ -9,6 +9,22 @@ const userSchema = new mongoose.Schema({
   profilePicture: { type: String, default: "" },
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   createdAt: { type: Date, default: Date.now },
+  notifications: [
+    {
+      type: {
+        type: String,
+        enum: ["like", "comment", "follow"],
+        required: true,
+      },
+      fromUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post" }, // Solo necesario para likes o comments
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 // Método para comparar contraseñas

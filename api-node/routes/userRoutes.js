@@ -6,6 +6,7 @@ const {
   addFriend,
   updateUserProfile,
   removeFriend,
+  getUserNotifications,
 } = require("../controllers/userController");
 const { protect } = require("../middlewares/authMiddleware");
 const { upload } = require("../controllers/postController");
@@ -223,5 +224,53 @@ router.put(
  *         description: Error del servidor
  */
 router.delete("/remove-friend/:friendId", protect, removeFriend);
+
+// paths:
+//   /api/user/notifications:
+//     get:
+//       summary: Obtener notificaciones del usuario autenticado
+//       tags: [Usuarios]
+//       security:
+//         - bearerAuth: []
+//       responses:
+//         200:
+//           description: Lista de notificaciones
+//           content:
+//             application/json:
+//               schema:
+//                 type: array
+//                 items:
+//                   type: object
+//                   properties:
+//                     type:
+//                       type: string
+//                       enum: ["like", "comment", "follow"]
+//                     fromUserId:
+//                       type: object
+//                       properties:
+//                         _id:
+//                           type: string
+//                         username:
+//                           type: string
+//                           example: "john_doe"
+//                         profilePicture:
+//                           type: string
+//                           example: "https://example.com/profile/john_doe.jpg"
+//                     postId:
+//                       type: object
+//                       properties:
+//                         _id:
+//                           type: string
+//                         title:
+//                           type: string
+//                           example: "Mi primera publicación"
+//                     createdAt:
+//                       type: string
+//                       format: date-time
+//         404:
+//           description: Usuario no encontrado
+//         500:
+//           description: Error del servidor
+router.get("/notifications", protect, getUserNotifications);
 
 module.exports = router;
